@@ -1,19 +1,19 @@
 # HireSmart API
 
-HireSmart API is the backend of the HireSmart recruitment and job management system. It is developed using ASP.NET Core Web API and provides authentication, role-based access, job management, company management, applications, resume handling, dashboards, and AI-based candidate evaluation.
+HireSmart API is the backend of a full-stack recruitment management system developed using ASP.NET Core Web API.
 
-The frontend is maintained in a separate React repository.
+The system provides APIs for Candidates, Recruiters, and Administrators to manage jobs, applications, companies, resumes, authentication, and AI-based candidate evaluation.
 
 ---
 
-## Technologies
+## Technologies Used
 
 - ASP.NET Core Web API
-- .NET 10
 - C#
 - Entity Framework Core
 - SQL Server
 - JWT Authentication
+- Role-Based Authorization
 - Swagger / OpenAPI
 - PdfPig
 - Ollama
@@ -21,104 +21,152 @@ The frontend is maintained in a separate React repository.
 
 ---
 
-## User Roles
-
-The API supports three main roles:
-
-- Candidate
-- Recruiter
-- Admin
-
-Role-based authorization is applied to protected endpoints.
-
----
-
 ## Main Features
 
 ### Authentication
 
-- Candidate registration
+- User registration
 - User login
-- JWT-based authentication
+- JWT authentication
 - Role-based authorization
+- Candidate, Recruiter, and Admin roles
 
 ### Candidate
 
-- Candidate dashboard
 - Browse jobs
 - Search jobs
 - View job details
 - Apply for jobs
-- Upload resume
-- Download/view resume
-- Delete resume
+- Upload resumes
+- View resumes
+- Delete resumes
 - View submitted applications
 - Delete applications
 - Track application status
 
 ### Recruiter
 
-- Recruiter dashboard
-- Create jobs
-- Edit jobs
-- Delete jobs
-- View applications for jobs
-- View candidate information
+- Create job postings
+- Update job postings
+- Delete job postings
+- View candidate applications
 - View candidate resumes
 - Update application status
+- Evaluate candidates using AI
 
 ### Administrator
 
-- Admin dashboard
 - Manage users
-- Manage jobs
 - Manage companies
-- Edit companies
-- Delete system records where authorized
+- Manage jobs
+- View and manage system data
 
 ### AI Candidate Evaluation
 
-The API includes an AI-based candidate evaluation module.
+The system includes an AI-based candidate evaluation module.
 
-The evaluation process:
+The AI evaluation process:
 
-1. Retrieves the selected application.
-2. Retrieves the associated job and candidate resume.
-3. Extracts text from the candidate's PDF resume using PdfPig.
-4. Sends the job title, job description, and extracted resume text to the local AI model.
-5. Uses Qwen 2.5:3B through Ollama.
-6. Generates:
+1. Retrieves the candidate's application.
+2. Retrieves the candidate's job information.
+3. Reads the candidate's uploaded PDF resume.
+4. Extracts text from the PDF using PdfPig.
+5. Sends the job description and resume information to the local AI model.
+6. Uses Qwen 2.5:3B through Ollama.
+7. Generates:
    - Match Score
    - Missing Skills
    - Candidate Summary
    - Recommendation
-7. Stores the evaluation in the database.
+8. Stores the evaluation result in the database.
 
-The AI is instructed to evaluate candidates based on requirements explicitly stated in the job description rather than inventing additional requirements.
+The evaluation is based on the skills and requirements explicitly provided in the job description.
 
 ---
 
 ## AI Evaluation
 
-AI evaluation uses:
+The AI evaluation module uses:
 
 - Ollama
 - Qwen 2.5:3B
 - PdfPig
 
-Ollama runs locally and the AI model is not included in the repository.
+### Ollama Setup
 
-The required model is:
+Install Ollama on the local machine and download the required model:
 
 ```text
-qwen2.5:3b
+ollama pull qwen2.5:3b
 ```
+
+Make sure Ollama is running before using the AI evaluation feature.
+
+The Qwen model runs locally and is not included in this GitHub repository.
+
+---
+
+## Backend Setup
+
+### 1. Clone the Repository
+
+Clone this backend repository:
+
+```text
+git clone https://github.com/Ahsan-246/HireSmart
+```
+
+### 2. Open the Project
+
+Open the `HireSmart.slnx` solution in Visual Studio.
+
+Alternatively, open the `HireSmart.API` project directory using your preferred .NET development environment.
+
+### 3. Configure SQL Server
+
+Update the database connection string in:
+
+```text
+HireSmart.API/appsettings.json
+```
+
+Use your local SQL Server configuration.
+
+Example:
+
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "YOUR_SQL_SERVER_CONNECTION_STRING"
+}
+```
+
+Do not commit passwords or other sensitive database credentials to GitHub.
+
+### 4. Apply Database Migrations
+
+Make sure the required Entity Framework Core tools are available, then run:
+
+```text
+dotnet ef database update
+```
+
+This creates/updates the required database using the existing migrations.
+
+### 5. Run the API
+
+Run the project from Visual Studio or use:
+
+```text
+dotnet run
+```
+
+Swagger/OpenAPI will be available at the URL shown by the application when it starts.
 
 ---
 
 ## API Modules
 
-The backend contains the following main API controllers:
+The backend provides APIs for:
 
 - Authentication
 - Users
@@ -126,70 +174,55 @@ The backend contains the following main API controllers:
 - Jobs
 - Applications
 - Resumes
-- AI Evaluation
-- Candidate Dashboard
-- Recruiter Dashboard
-- Admin Dashboard
+- AI Evaluations
 
 ---
 
-## API Operations
+## Resume Handling
 
-### Authentication
+HireSmart supports resume management through the API, including:
 
-- Register
-- Login
+- Resume upload
+- Resume viewing
+- Resume deletion
+- Resume retrieval for candidate applications
 
-### Jobs
+Uploaded resume files are stored locally according to the application's configured file-storage implementation.
 
-- Create job
-- Get all jobs
-- Get job by ID
-- Update job
-- Delete job
-- Search jobs
+---
 
-### Applications
+## Authentication and Authorization
 
-- Create application
-- Get applications
-- Get application by ID
-- Get current user's applications
-- Get applications for a job
-- Update application
-- Update application status
-- Delete application
-- Download application resume
+The API uses JWT authentication and role-based authorization.
 
-### Resumes
+Available roles include:
 
-- Upload resume
-- Get resumes
-- Get resume by ID
-- Download resume
-- Delete resume
+- Candidate
+- Recruiter
+- Admin
 
-### Companies
+Protected endpoints require a valid JWT authentication token and the appropriate role.
 
-- Create company
-- Get companies
-- Get company by ID
-- Update company
-- Delete company
+---
 
-### Users
+## Testing
 
-- Get users
-- Get user by ID
-- Update user
-- Delete user
+API endpoints can be tested using:
 
-### AI Evaluation
+- Swagger
+- Postman
 
-- Evaluate application
-- Get all evaluations
-- Get evaluation by ID
-- Delete evaluation
+The main functionality can be tested through:
+
+- User registration and login
+- Authentication and authorization
+- Job CRUD operations
+- Job searching
+- Application creation
+- Application management
+- Resume upload and retrieval
+- Application status management
+- AI candidate evaluation
 
 ---
 
@@ -209,11 +242,9 @@ HireSmart.API
 │
 ├── Services
 │   ├── Interfaces
-│   └── Implementations
+│   └── Implementation
 │
 ├── Migrations
-│
-├── Uploads
 │
 ├── Program.cs
 ├── appsettings.json
@@ -222,96 +253,64 @@ HireSmart.API
 
 ---
 
-## Database
-
-The application uses SQL Server with Entity Framework Core.
-
-The database contains data related to:
-
-- Users
-- Companies
-- Jobs
-- Applications
-- Resumes
-- AI Evaluations
-
-Entity Framework Core migrations are included in the project.
-
----
-
-## Configuration
-
-The API requires a SQL Server connection string and JWT configuration.
-
-These values are stored in the application's configuration files.
-
-Sensitive credentials and secret keys should be configured locally and should not be committed to a public repository.
-
----
-
-## Running the API
-
-The API can be run using Visual Studio or the .NET CLI.
-
-After configuring SQL Server and the required local services, the application can be started with:
-
-```bash
-dotnet run
-```
-
-Swagger/OpenAPI can then be used to explore and test the available endpoints.
-
----
-
-## Ollama Configuration
-
-For AI evaluation, Ollama must be installed and running locally.
-
-The required model can be downloaded using:
-
-```bash
-ollama pull qwen2.5:3b
-```
-
-The API communicates with Ollama through its local HTTP API.
-
----
-
-## Frontend
-
-The HireSmart React frontend is maintained in a separate repository.
-
-The frontend communicates with this API using Axios.
-
-Frontend repository:
+## AI Evaluation Flow
 
 ```text
-<https://github.com/Ahsan-246/hiresmart-frontend>
+Candidate Application
+        │
+        ▼
+Candidate Resume
+        │
+        ▼
+PDF Text Extraction
+        │
+        ▼
+Job Description + Resume Text
+        │
+        ▼
+Ollama
+        │
+        ▼
+Qwen 2.5:3B
+        │
+        ▼
+AI Evaluation
+        │
+        ├── Match Score
+        ├── Missing Skills
+        ├── Summary
+        └── Recommendation
+        │
+        ▼
+Database
 ```
 
 ---
 
-## Testing
+## Important Notes
 
-The API can be tested using:
-
-- Swagger
-- Postman
-
-The API supports testing of authentication, CRUD operations, applications, resume handling, job management, and AI evaluation.
-
----
-
-## Notes
-
-- SQL Server is required for database functionality.
-- Ollama and Qwen 2.5:3B are required for AI evaluation.
-- Resume AI evaluation currently processes PDF resumes.
-- The frontend and backend are maintained in separate repositories.
-- Local configuration values and secret keys should not be committed publicly.
+- SQL Server must be available locally.
+- The database connection string must be configured before running the API.
+- Database migrations should be applied before using the application.
+- Ollama must be installed to use AI evaluation.
+- The `qwen2.5:3b` model must be downloaded before using AI evaluation.
+- The Qwen model runs locally and is not stored in the GitHub repository.
+- Resume files are stored locally by the application.
+- API URLs may differ depending on the local development environment.
+- Sensitive credentials and connection strings should not be committed to GitHub.
 
 ---
 
-## Author
+## Related Frontend
 
-Developed as a full-stack recruitment management project using ASP.NET Core Web API and React.
+The HireSmart frontend is maintained in a separate GitHub repository because the frontend and backend are separate projects.
+
+The frontend is developed using React, Vite, Axios, and React Router.
+
+Frontend Repository:
+
+```text
+https://github.com/Ahsan-246/hiresmart-frontend
+```
+
+---
